@@ -4,36 +4,126 @@ import {
   HttpCode,
   HttpStatus,
   Post,
-  UnauthorizedException,
+  Logger,
+  BadRequestException,
 } from '@nestjs/common';
-import { signInUserDto } from './dto/signin-user.dto';
+import { GithubAuthDto, GoogleAuthDto, LoginRequestDto, RefreshTokenRequestDto, signInUserDto } from './dto/signin-user.dto';
 import { AuthService } from './auth.service';
-import * as jwt from 'jsonwebtoken';
-import AppConfigs from '../../config/app-config/app.configs';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags, ApiResponse, ApiCreatedResponse } from '@nestjs/swagger';
+import { _400, _401 } from 'src/common/constants/error.constant';
+import { User } from 'src/database/entities/user.entity';
+import { CreateUserDto } from '../users/dto/user.dto';
 
 @Controller('auth')
 @ApiTags('Auth')
 export class AuthController {
+  private readonly logger = new Logger(AuthController.name);
+
   constructor(private readonly authService: AuthService) {}
 
+  @Post()
+  @ApiOperation({ summary: 'Open Registration' })
+  @ApiCreatedResponse({
+    description: 'User created successfully',
+    type: User,
+  })
+  async createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
+    return this.authService.createUser(createUserDto);
+  }
+
   /**
-   * Signs in user and returns jwt
+   * Signs in user and returns JWT tokens
    * @param loginUserDto
-   * @returns
+   * @returns Access token, refresh token and user data
    */
-  @Post('signin')
+  @Post('login')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Signs in a user' })
-  async signIn(@Body() loginUserDto: signInUserDto): Promise<any> {
-    const { userName, password } = loginUserDto;
-    const credentialsPass = await this.authService.signIn(userName, password);
-    if (!credentialsPass) {
-      throw new UnauthorizedException();
+  @ApiOperation({ summary: 'Sign in with email and password' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Successfully signed in' })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Invalid credentials' })
+  async signIn(@Body() loginUserDto: LoginRequestDto): Promise<any> {
+    try {
+      if (!loginUserDto.email || !loginUserDto.password) {
+        throw new BadRequestException(_400.MISSING_REQUIRED_FIELD);
+      }
+      
+      const result = await this.authService.login({
+        email: loginUserDto.email,
+        password: loginUserDto.password
+      });
+      return result;
+    } catch (error) {
+      this.logger.error(`Sign in failed: ${error.message}`, error.stack);
+      throw error;
     }
-    const payload = { userName };
-    return {
-      accessToken: jwt.sign(payload, AppConfigs.JWT_SECRET),
-    };
+  }
+
+  /**
+   * Authenticates with Google
+   * @param googleAuthDto
+   * @returns Access token, refresh token and user data
+   */
+  @Post('google')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Authenticate with Google' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Successfully authenticated' })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Invalid token' })
+  async googleAuth(@Body() googleAuthDto: GoogleAuthDto): Promise<any> {
+    try {
+      if (!googleAuthDto.idToken) {
+        throw new BadRequestException(_400.MISSING_REQUIRED_FIELD);
+      }
+      
+      return await this.authService.googleAuth(googleAuthDto);
+    } catch (error) {
+      this.logger.error(`Google auth failed: ${error.message}`, error.stack);
+      throw error;
+    }
+  }
+
+  /**
+   * Authenticates with GitHub
+   * @param githubAuthDto
+   * @returns Access token, refresh token and user data
+   */
+  @Post('github')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Authenticate with GitHub' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Successfully authenticated' })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Invalid token' })
+  async githubAuth(@Body() githubAuthDto: GithubAuthDto): Promise<any> {
+    try {
+      if (!githubAuthDto.code) {
+        throw new BadRequestException(_400.MISSING_REQUIRED_FIELD);
+      }
+      
+      return await this.authService.githubAuth(githubAuthDto);
+    } catch (error) {
+      this.logger.error(`GitHub auth failed: ${error.message}`, error.stack);
+      throw error;
+    }
+  }
+
+  /**
+   * Refreshes access token using refresh token
+   * @param refreshTokenDto
+   * @returns New access token and refresh token
+   */
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Refresh access token' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Successfully refreshed token' })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Invalid refresh token' })
+  async refreshToken(@Body() refreshTokenDto: RefreshTokenRequestDto): Promise<any> {
+    try {
+      if (!refreshTokenDto.refreshToken) {
+        throw new BadRequestException(_400.MISSING_REQUIRED_FIELD);
+      }
+      
+      return await this.authService.refreshToken(refreshTokenDto.refreshToken);
+    } catch (error) {
+      this.logger.error(`Token refresh failed: ${error.message}`, error.stack);
+      throw error;
+    }
   }
 }

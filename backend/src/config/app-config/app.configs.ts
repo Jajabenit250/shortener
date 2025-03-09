@@ -1,4 +1,4 @@
-import 'dotenv/config';
+import "dotenv/config";
 
 const { env } = process;
 const {
@@ -8,6 +8,8 @@ const {
   DATABASE_PASS,
   PORT,
   JWT_SECRET,
+  NODE_ENV,
+  JWT_REFRESH_SECRET
 } = env;
 
 const DATABASE: any = {
@@ -17,5 +19,5 @@ const DATABASE: any = {
   DATABASE_PASS,
 };
 
-const GLOBAL_CONFIGS = { DATABASE, PORT, JWT_SECRET };
+const GLOBAL_CONFIGS = { DATABASE, PORT, JWT_SECRET, NODE_ENV, JWT_REFRESH_SECRET };
 export default GLOBAL_CONFIGS;
