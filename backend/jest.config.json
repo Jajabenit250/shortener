@@ -1,0 +1,16 @@
+{
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": ".",
+  "testEnvironment": "node",
+  "testRegex": ".test.ts$",
+  "transform": {
+    "^.+\\.(t|j)s$": ["ts-jest"]
+  },
+  "coverageDirectory": "./coverage",
+  "setupFilesAfterEnv": ["jest-extended/all", "./jest.setup.ts"],
+  "moduleNameMapper": {
+    "^src/(.*)": "<rootDir>/src/$1"
+  },
+  "globalSetup": "<rootDir>/test/setup/globalSetup.ts",
+  "globalTeardown": "<rootDir>/test/setup/globalTeardown.ts"
+}
