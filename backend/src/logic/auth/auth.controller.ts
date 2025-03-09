@@ -13,6 +13,7 @@ import { ApiOperation, ApiTags, ApiResponse, ApiCreatedResponse } from '@nestjs/
 import { _400, _401 } from 'src/common/constants/error.constant';
 import { User } from 'src/database/entities/user.entity';
 import { CreateUserDto } from '../users/dto/user.dto';
+import { Public } from 'src/common/decorators/public.decorator';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -22,6 +23,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post()
+  @Public()
   @ApiOperation({ summary: 'Open Registration' })
   @ApiCreatedResponse({
     description: 'User created successfully',
@@ -37,6 +39,7 @@ export class AuthController {
    * @returns Access token, refresh token and user data
    */
   @Post('login')
+  @Public()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Sign in with email and password' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successfully signed in' })
@@ -64,6 +67,7 @@ export class AuthController {
    * @returns Access token, refresh token and user data
    */
   @Post('google')
+  @Public()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Authenticate with Google' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successfully authenticated' })
@@ -87,6 +91,7 @@ export class AuthController {
    * @returns Access token, refresh token and user data
    */
   @Post('github')
+  @Public()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Authenticate with GitHub' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successfully authenticated' })
@@ -110,6 +115,7 @@ export class AuthController {
    * @returns New access token and refresh token
    */
   @Post('refresh')
+  @Public()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Refresh access token' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successfully refreshed token' })

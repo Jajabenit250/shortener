@@ -174,7 +174,13 @@ export class AuthService {
           authProviderId: googleUser.id,
           refreshToken: '',
           lastLogin: undefined,
-          deletedAt: undefined
+          deletedAt: undefined,
+          urls: [],
+          isEmailVerified: false,
+          displayName: '',
+          urlLimit: 0,
+          apiKey: '',
+          preferences: undefined
         });
       }
 
@@ -245,7 +251,13 @@ export class AuthService {
           authProviderId: userInfo.id.toString(),
           refreshToken: '',
           lastLogin: undefined,
-          deletedAt: undefined
+          deletedAt: undefined,
+          isEmailVerified: false,
+          urls: [],
+          displayName: '',
+          urlLimit: 0,
+          apiKey: '',
+          preferences: undefined
         });
       }
       // Update last login

@@ -1,9 +1,10 @@
-import { Column, Entity, Index } from 'typeorm';
-import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { Column, Entity, Index, OneToMany } from 'typeorm';
+import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, IsBoolean } from 'class-validator';
 import { CommonEntity } from './common.entity';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { UserRole, CommonUserStatus, AuthProvider } from 'src/common/constants/enum.constant';
 import { Exclude } from 'class-transformer';
+import { Url } from './url.entity';
 
 @Entity()
 export class User extends CommonEntity {
@@ -13,15 +14,28 @@ export class User extends CommonEntity {
   @Index()
   email: string;
   
+  @ApiProperty({ description: 'Username for login' })
   @Column({ unique: true })
   @IsString()
   @IsNotEmpty()
+  @Index()
   userName: string;
+
+  @ApiProperty({ description: 'Display name' })
+  @Column({ length: 100, nullable: true })
+  @IsString()
+  @IsOptional()
+  displayName: string;
 
   @Column({ select: false })
   @IsString()
   @IsNotEmpty()
   password: string;
+
+  @ApiProperty({ description: 'Whether email is verified' })
+  @Column({ default: false })
+  @IsBoolean()
+  isEmailVerified: boolean;
 
   @ApiProperty({ description: 'User role', enum: UserRole })
   @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
@@ -63,7 +77,20 @@ export class User extends CommonEntity {
   @Column({ nullable: true })
   lastLogin: Date;
 
-  // @ApiHideProperty()
-  // @OneToMany(() => Url, (url) => url.user)
-  // urls: Url[];
+  @ApiProperty({ description: 'Maximum URLs allowed' })
+  @Column({ default: 100 })
+  urlLimit: number;
+
+  @ApiProperty({ description: 'API key for programmatic access' })
+  @Column({ nullable: true, select: false })
+  @Exclude()
+  apiKey: string;
+
+  @ApiProperty({ description: 'User preferences (JSON)' })
+  @Column({ type: 'json', nullable: true })
+  preferences: Record<string, any>;
+
+  @ApiHideProperty()
+  @OneToMany(() => Url, (url) => url.user)
+  urls: Url[];
 }

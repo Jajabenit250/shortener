@@ -7,6 +7,15 @@ export const _400 = {
     code: "BAD_REQUEST",
     message: "The request is invalid",
   },
+  INVALID_URL: {
+    code: "INVALID_URL",
+    message: "The provided URL is not valid",
+  },
+  INCORRECT_PASSWORD: {
+    code: "INCORRECT_PASSWORD",
+    message: "The provided password is incorrect",
+  },
+
   INVALID_URL_FORMAT: {
     code: "INVALID_URL_FORMAT",
     message: "The provided URL is not valid",
@@ -51,6 +60,14 @@ export const _400 = {
     code: "EMAIL_ALREADY_EXISTS",
     message: "Email address already exists",
   },
+  CUSTOM_ALIAS_TAKEN: {
+    code: "CUSTOM_ALIAS_TAKEN",
+    message: "Custom alias is already taken",
+  },
+  PASSWORD_REQUIRED: {
+    code: "PASSWORD_REQUIRED",
+    message: "Password required",
+  },
 };
 
 /**
@@ -93,6 +110,35 @@ export const _401 = {
   SESSION_EXPIRED: {
     code: "SESSION_EXPIRED",
     message: "Your session has expired, please log in again",
+  },
+};
+
+export const _403 = {
+  URL_ACCESS_DENIED: {
+    code: "URL_ACCESS_DENIED",
+    message: "Url access denied",
+  },
+
+  URL_NOT_FOUND: {
+    code: "URL_NOT_FOUND",
+    message: "Url not found",
+  },
+};
+
+export const _404 = {
+  USER_NOT_FOUND: {
+    code: "USER_NOT_FOUND",
+    message: "User not found",
+  },
+
+  URL_NOT_FOUND: {
+    code: "URL_NOT_FOUND",
+    message: "Url not found",
+  },
+
+  EXPIRED_URL: {
+    code: "EXPIRED_URL",
+    message: "Expired URL",
   },
 };
 
@@ -140,13 +186,5 @@ export const _500 = {
   FILE_SYSTEM_ERROR: {
     code: "FILE_SYSTEM_ERROR",
     message: "An error occurred while accessing the file system",
-  },
-};
-
-
-export const _404 = {
-  USER_NOT_FOUND: {
-    code: 'USER_NOT_FOUND',
-    message: 'User not found',
   },
 };

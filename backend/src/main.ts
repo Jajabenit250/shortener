@@ -13,18 +13,13 @@ async function bootstrap() {
   
   app.useLogger(app.get(Logger));
 
-  app.enableVersioning({
-    type: VersioningType.URI,
-    defaultVersion: '1',
-  });
-
   app.useGlobalPipes(new ValidationPipe());
 
   const config = new DocumentBuilder()
     .setTitle('URL SHORTENER')
     .setDescription('URL SHORTENER APIs')
     .setVersion('1.0')
-    .addTag('shortener')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

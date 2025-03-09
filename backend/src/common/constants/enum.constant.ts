@@ -50,3 +50,18 @@ export enum UserRole {
   SUPPORT = 'support',
   GUEST = 'guest',
 }
+
+/**
+ * Enumeration representing the status of a shortened URL.
+ *
+ * @remarks
+ * This enumeration defines the different states a shortened URL can be in,
+ * affecting its accessibility and behavior.
+ */
+export enum UrlStatus {
+  ACTIVE = 'active',
+  EXPIRED = 'expired',
+  DISABLED = 'disabled',
+  DELETED = 'deleted',
+  PENDING_REVIEW = 'pending_review',
+}
