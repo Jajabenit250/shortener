@@ -308,8 +308,8 @@ export default function ShortenerForm() {
                     ) : (
                       <>
                         {isLoggedIn
-                          ? "Get your link for free"
-                          : "Get your link"}
+                          ? "Generate a link"
+                          : "Get your link for free"}
                         <svg
                           className="ml-2 w-5 h-5"
                           fill="none"
