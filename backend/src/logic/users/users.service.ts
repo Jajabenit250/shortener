@@ -22,7 +22,7 @@ export class UsersService {
    */
   async create(createUserDto: CreateUserDto): Promise<User> {
     try {
-      const { email, password } = createUserDto;
+      const { email, passwordHash: password } = createUserDto;
 
       // Check if user with email already exists
       const existingUser = await this.findUserByEmail(email);
@@ -36,7 +36,7 @@ export class UsersService {
       // Create new user
       const user = this.userRepository.create({
         ...createUserDto,
-        password: hashedPassword,
+        passwordHash: hashedPassword,
         role: createUserDto.role || UserRole.USER,
         status: createUserDto.status || CommonUserStatus.ACTIVE,
       });
@@ -45,7 +45,7 @@ export class UsersService {
       const savedUser = await this.userRepository.save(user);
 
       // Remove sensitive data before returning
-      delete savedUser.password;
+      delete savedUser.passwordHash;
       delete savedUser.refreshToken;
 
       return savedUser;
@@ -102,7 +102,7 @@ export class UsersService {
         'userName',
         'role',
         'status',
-        'password',
+        'passwordHash',
       ],
     });
   }

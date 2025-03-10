@@ -73,7 +73,7 @@ export class UrlsService {
       } else {
         // Check if custom alias is available
         const existingUrl = await this.urlRepository.findOne({
-          where: { alias: finalAlias },
+          where: { shortCode: finalAlias },
         });
 
         if (existingUrl) {
@@ -91,8 +91,8 @@ export class UrlsService {
 
       // Create and save the URL
       const url = this.urlRepository.create({
-        originalUrl,
-        alias: finalAlias,
+        longUrl: originalUrl,
+        shortCode: finalAlias,
         userId: user.id,
         expiresAt,
         isPasswordProtected: !!isPasswordProtected,
@@ -146,8 +146,8 @@ export class UrlsService {
       // Apply text search if provided
       if (filters.search) {
         where = [
-          { ...where, originalUrl: ILike(`%${filters.search}%`) },
-          { ...where, alias: ILike(`%${filters.search}%`) },
+          { ...where, longUrl: ILike(`%${filters.search}%`) },
+          { ...where, shortCode: ILike(`%${filters.search}%`) },
           { ...where, title: ILike(`%${filters.search}%`) },
         ];
       }
@@ -211,7 +211,7 @@ export class UrlsService {
 
       // If not in cache, get from database
       const url = await this.urlRepository.findOne({
-        where: { alias, status: UrlStatus.ACTIVE },
+        where: { shortCode: alias, status: UrlStatus.ACTIVE },
       });
 
       if (!url) {
@@ -241,7 +241,7 @@ export class UrlsService {
       await this.cacheManager.set(
         cacheKey,
         {
-          originalUrl: url.originalUrl,
+          originalUrl: url.longUrl,
           isPasswordProtected: url.isPasswordProtected,
           isExpired: false,
         },
@@ -251,7 +251,7 @@ export class UrlsService {
       // If not password protected, record click and return URL
       if (!url.isPasswordProtected) {
         await this.recordUrlClick(alias, clientInfo);
-        return { originalUrl: url.originalUrl, isPasswordProtected: false };
+        return { originalUrl: url.longUrl, isPasswordProtected: false };
       }
 
       // If password protected, return flag
@@ -274,8 +274,8 @@ export class UrlsService {
     clientInfo: ClientInfo
   ): Promise<string> {
     const url = await this.urlRepository.findOne({
-      where: { alias, status: UrlStatus.ACTIVE },
-      select: ["id", "originalUrl", "password", "expiresAt"],
+      where: { shortCode: alias, status: UrlStatus.ACTIVE },
+      select: ["id", "longUrl", "password", "expiresAt"],
     });
 
     if (!url) {
@@ -298,7 +298,7 @@ export class UrlsService {
 
     // Record click and return original URL
     await this.recordUrlClick(alias, clientInfo);
-    return url.originalUrl;
+    return url.longUrl;
   }
 
   // ==================== ANALYTICS ====================
@@ -313,7 +313,7 @@ export class UrlsService {
     endDate?: Date
   ): Promise<UrlAnalyticsDto> {
     const url = await this.urlRepository.findOne({
-      where: { alias },
+      where: { shortCode: alias },
     });
 
     if (!url) {
@@ -364,7 +364,7 @@ export class UrlsService {
     try {
       // Get the URL first
       const url = await this.urlRepository.findOne({
-        where: { alias },
+        where: { shortCode: alias },
       });
 
       if (!url) return;
@@ -456,7 +456,7 @@ export class UrlsService {
     // Keep generating until we find a unique one
     while (!isUnique) {
       alias = generateId();
-      const existing = await this.urlRepository.findOne({ where: { alias } });
+      const existing = await this.urlRepository.findOne({ where: { shortCode: alias } });
       if (!existing) {
         isUnique = true;
       }
@@ -538,9 +538,9 @@ export class UrlsService {
 
     return {
       id: url.id,
-      originalUrl: url.originalUrl,
-      alias: url.alias,
-      shortUrl: `${baseUrl}/${url.alias}`,
+      originalUrl: url.longUrl,
+      alias: url.shortCode,
+      shortUrl: `${baseUrl}/${url.shortCode}`,
       createdAt: url.createdAt,
       expiresAt: url.expiresAt,
       clicks: url.clicks,

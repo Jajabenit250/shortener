@@ -4,7 +4,7 @@ import { User } from 'src/database/entities/user.entity';
 
 export class signInUserDto extends PickType(User, [
   'userName',
-  'password',
+  'passwordHash',
 ] as const) {}
 
 export class LoginRequestDto {

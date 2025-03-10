@@ -36,7 +36,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       }
 
       // Return user without sensitive data
-      delete user.password;
+      delete user.passwordHash;
       delete user.refreshToken;
 
       return user;

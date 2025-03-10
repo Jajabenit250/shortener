@@ -57,14 +57,14 @@ export class AuthService {
 
     const accessToken = this.jwtService.sign(payload, {
       secret: AppConfigs.JWT_SECRET,
-      expiresIn: '15m'
+      expiresIn: AppConfigs.JWT_SECRET_EXPIRATION_TIME
     });
 
     const refreshToken = this.jwtService.sign(
       { sub: user.id },
       {
         secret: AppConfigs.JWT_REFRESH_SECRET,
-        expiresIn: '7d'
+        expiresIn: AppConfigs.JWT_REFRESH_SECRET_EXPIRATION_TIME,
       }
     );
 
@@ -98,7 +98,7 @@ export class AuthService {
       // Verify password
       const passwordValid = await this.comparePasswords(
         password,
-        user.password,
+        user.passwordHash,
       );
       if (!passwordValid) {
         throw new UnauthorizedException(_401.INVALID_CREDENTIALS);
@@ -114,7 +114,7 @@ export class AuthService {
       await this.usersService.updateRefreshToken(user.id, tokens.refreshToken);
 
       // Remove sensitive data
-      delete user.password;
+      delete user.passwordHash;
       delete user.refreshToken;
 
       // Return response
@@ -167,7 +167,7 @@ export class AuthService {
         user = await this.usersService.create({
           email: googleUser.email,
           userName: googleUser.name || googleUser.email.split('@')[0],
-          password: await this.hashPassword(randomBytes(16).toString('hex')),
+          passwordHash: await this.hashPassword(randomBytes(16).toString('hex')),
           role: UserRole.USER,
           status: CommonUserStatus.ACTIVE,
           authProvider: AuthProvider.GOOGLE,
@@ -244,7 +244,7 @@ export class AuthService {
         user = await this.usersService.create({
           email: userInfo.email,
           userName: userInfo.name || userInfo.login,
-          password: await this.hashPassword(randomBytes(16).toString('hex')),
+          passwordHash: await this.hashPassword(randomBytes(16).toString('hex')),
           role: UserRole.USER,
           status: CommonUserStatus.ACTIVE,
           authProvider: AuthProvider.GITHUB,

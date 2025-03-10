@@ -8,15 +8,15 @@ import { UrlStatus } from 'src/common/constants/enum.constant';
 @Entity('urls')
 export class Url extends CommonEntity {
   @ApiProperty({ description: 'Original long URL' })
-  @Column({ type: 'text' })
+  @Column({ type: 'text', name: 'long_url' })
   @IsUrl()
-  originalUrl: string;
+  longUrl: string;
 
   @ApiProperty({ description: 'Short URL alias/code' })
-  @Column({ length: 50 })
-  @Index('idx_url_alias', { unique: true })
+  @Column({ length: 100, name: 'short_code' })
+  @Index({ unique: true })
   @IsString()
-  alias: string;
+  shortCode: string;
 
   @ApiProperty({ description: 'URL title for organization' })
   @Column({ length: 255, nullable: true })

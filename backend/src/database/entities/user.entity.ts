@@ -15,7 +15,7 @@ export class User extends CommonEntity {
   email: string;
   
   @ApiProperty({ description: 'Username for login' })
-  @Column({ unique: true })
+  @Column({ unique: true, name: 'username' })
   @IsString()
   @IsNotEmpty()
   @Index()
@@ -27,10 +27,10 @@ export class User extends CommonEntity {
   @IsOptional()
   displayName: string;
 
-  @Column({ select: false })
+  @Column({ select: false, name: 'password_hash' })
   @IsString()
   @IsNotEmpty()
-  password: string;
+  passwordHash: string;
 
   @ApiProperty({ description: 'Whether email is verified' })
   @Column({ default: false })
