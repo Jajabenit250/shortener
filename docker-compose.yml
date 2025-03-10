@@ -1,29 +1,106 @@
-version: '3.5'
+version: '3.8'
 
 services:
-  db:
-    image: postgres
-    restart: always
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=secret
-    container_name: postgres
-    volumes:
-      - ./pgdata:/var/lib/postgresql/data
+  # Backend API service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        NODE_ENV: ${NODE_ENV:-development}
+    image: shortlinks-backend:latest
+    container_name: shortlinks-backend
+    restart: unless-stopped
     ports:
-      - '5433:5432'
-
-  pgadmin:
-    image: dpage/pgadmin4
-    restart: always
-    container_name: nest-pgadmin4
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=ahirwe@max.rw
-      - PGADMIN_DEFAULT_PASSWORD=tekanarw
-    ports:
-      - '5050:80'
+      - "${BACKEND_PORT:-3001}:3001"
     depends_on:
-      - db
+      postgres:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - PORT=3001
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USERNAME=${POSTGRES_USER:-postgres}
+      - DB_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - DB_DATABASE=${POSTGRES_DB:-shortlinks}
+      - JWT_SECRET=${JWT_SECRET:-your-jwt-secret-key}
+      - JWT_ACCESS_EXPIRATION=${JWT_ACCESS_EXPIRATION:-15m}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-your-jwt-refresh-secret}
+      - JWT_REFRESH_EXPIRATION=${JWT_REFRESH_EXPIRATION:-7d}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI}
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
+      - GITHUB_REDIRECT_URI=${GITHUB_REDIRECT_URI}
+      - APP_URL=${APP_URL:-http://localhost:3000}
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - shortlinks-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  # Frontend service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NODE_ENV: ${NODE_ENV:-development}
+    image: shortlinks-frontend:latest
+    container_name: shortlinks-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    depends_on:
+      - backend
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - NEXT_PUBLIC_API_URL=${API_URL:-http://localhost:3001}
+      - NEXT_PUBLIC_APP_URL=${APP_URL:-http://localhost:3000}
+      - NEXT_PUBLIC_GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - NEXT_PUBLIC_GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    networks:
+      - shortlinks-network
+
+  # PostgreSQL database service
+  postgres:
+    image: postgres:15-alpine
+    container_name: shortlinks-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-shortlinks}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./backend/scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    networks:
+      - shortlinks-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-shortlinks}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+networks:
+  shortlinks-network:
+    driver: bridge
+
 volumes:
-  db:
+  postgres-data:
     driver: local

@@ -246,7 +246,7 @@ export default function AnalyticsPage({ params }: { params: any }) {
                 <CardContent>
                   <div className="text-3xl font-bold">
                     {analytics.uniqueVisitors 
-                      ? ((analytics.totalClicks / analytics.uniqueVisitors) * 100).toFixed(1) + '%' 
+                      ? Math.min(((analytics.totalClicks / analytics.uniqueVisitors) * 100), 100).toFixed(1) + '%' 
                       : '0%'}
                   </div>
                 </CardContent>
