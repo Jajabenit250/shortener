@@ -4,7 +4,7 @@ A full-stack URL shortener application with analytics, user authentication, and 
 
 ## Overview
 
-ShortLinks is a Bitly-like URL shortener that allows users to create shortened links, track their performance, and visualize analytics. Built with security, performance, and user experience in mind, it features JWT authentication, comprehensive analytics, and a responsive UI.
+Shortener is a Bitly-like URL shortener that allows users to create shortened links, track their performance, and visualize analytics. Built with security, performance, and user experience in mind, it features JWT authentication, comprehensive analytics, and a responsive UI.
 
 The project was built as part of a software engineering challenge to demonstrate full-stack development capabilities across secure authentication, frontend development, and backend API design.
 
