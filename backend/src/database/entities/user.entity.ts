@@ -1,7 +1,7 @@
 import { Column, Entity, Index, OneToMany } from 'typeorm';
 import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, IsBoolean } from 'class-validator';
 import { CommonEntity } from './common.entity';
-import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
+import { ApiHideProperty, ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { UserRole, CommonUserStatus, AuthProvider } from 'src/common/constants/enum.constant';
 import { Exclude } from 'class-transformer';
 import { Url } from './url.entity';
@@ -32,23 +32,26 @@ export class User extends CommonEntity {
   @IsNotEmpty()
   passwordHash: string;
 
-  @ApiProperty({ description: 'Whether email is verified' })
+  @ApiPropertyOptional({ description: 'Whether email is verified' })
   @Column({ default: false })
   @IsBoolean()
+  @IsOptional()
   isEmailVerified: boolean;
 
-  @ApiProperty({ description: 'User role', enum: UserRole })
+  @ApiPropertyOptional({ description: 'User role', enum: UserRole })
   @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
   @IsEnum(UserRole)
+  @IsOptional()
   role: UserRole;
 
-  @ApiProperty({ description: 'User account status', enum: CommonUserStatus })
+  @ApiPropertyOptional({ description: 'User account status', enum: CommonUserStatus })
   @Column({
     type: 'enum',
     enum: CommonUserStatus,
     default: CommonUserStatus.ACTIVE,
   })
   @IsEnum(CommonUserStatus)
+  @IsOptional()
   status: CommonUserStatus;
 
   @ApiProperty({ description: 'Authentication provider', enum: AuthProvider })

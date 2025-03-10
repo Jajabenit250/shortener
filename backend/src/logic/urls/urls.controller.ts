@@ -11,6 +11,7 @@ import {
   Logger,
   HttpCode,
   Query,
+  BadRequestException,
 } from "@nestjs/common";
 import {
   ApiOperation,
@@ -122,7 +123,7 @@ export class UrlsController {
   @ApiQuery({ name: "endDate", required: false, type: Date })
   async getUrlAnalytics(
     @AuthenticatedUser() user: User,
-    @Param("alias") alias: string,
+    @Param("shortUrl") alias: string,
     @Query("startDate") startDate?: string,
     @Query("endDate") endDate?: string
   ): Promise<UrlAnalyticsDto> {
@@ -144,58 +145,44 @@ export class UrlsController {
   @Public()
   @Throttle({ default: { ttl: 60000, limit: 60 } }) // 60 requests per minute
   @ApiOperation({ summary: "Redirect to original URL" })
-  @ApiParam({ name: "alias", description: "Short URL alias" })
+  @ApiParam({ name: "shortUrl", description: "Short URL alias" })
   @ApiResponse({
     status: HttpStatus.FOUND,
     description: "Redirects to original URL",
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Returns information for password-protected URLs",
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
     description: "URL not found or expired",
   })
   async redirectToOriginalUrl(
-    @Param("alias") alias: string,
+    @Param("shortUrl") alias: string,
     @Req() req: Request,
-    @Res() res: Response
-  ) {
-    // Extract client info
+  ): Promise<any> {
     const clientInfo = getClientInfo(req);
 
-    try {
-      const result = await this.urlsService.getRedirectUrl(alias, clientInfo);
-
-      if (result.isPasswordProtected) {
-        // If password protected, render password form
-        return res.render("password-form", { alias });
-      }
-
-      // Redirect to the original URL
-      return res.redirect(HttpStatus.FOUND, result.originalUrl);
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        // Render a custom 404 page
-        return res.status(HttpStatus.NOT_FOUND).render("not-found", {
-          message: error.message,
-          baseUrl: this.configService.get("APP_URL"),
-        });
-      }
-
-      // For other errors, let the exception filter handle it
-      throw error;
-    }
+    return await this.urlsService.getRedirectUrl(alias, clientInfo);
   }
 
   /**
    * Handle password submission for protected URLs
    */
   @Post(":shortUrl/access")
+  @Public()
   @Throttle({ default: { ttl: 60000, limit: 10 } }) // 10 requests per minute
   @ApiOperation({ summary: "Access password-protected URL" })
-  @ApiParam({ name: "alias", description: "Short URL alias" })
+  @ApiParam({ name: "shortUrl", description: "Short URL alias" })
   @ApiBody({ type: AccessUrlDto })
   @ApiResponse({
     status: HttpStatus.FOUND,
     description: "Redirects to original URL",
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Returns the original URL (for API clients)",
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
@@ -206,37 +193,16 @@ export class UrlsController {
     description: "URL not found or expired",
   })
   async accessProtectedUrl(
-    @Param("alias") alias: string,
+    @Param("shortUrl") alias: string,
     @Body() accessUrlDto: AccessUrlDto,
-    @Req() req: Request,
-    @Res() res: Response
+    @Req() req: Request
   ) {
-    // Extract client info
     const clientInfo = getClientInfo(req);
 
-    try {
-      const originalUrl = await this.urlsService.accessProtectedUrl(
-        alias,
-        accessUrlDto,
-        clientInfo
-      );
-
-      // Redirect to the original URL
-      return res.redirect(HttpStatus.FOUND, originalUrl);
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        // Render a custom 404 page
-        return res.status(HttpStatus.NOT_FOUND).render("not-found", {
-          message: error.message,
-          baseUrl: this.configService.get("APP_URL"),
-        });
-      }
-
-      // For password errors, render the form again with error message
-      return res.status(HttpStatus.BAD_REQUEST).render("password-form", {
-        alias,
-        error: error.message,
-      });
-    }
+    return await this.urlsService.accessProtectedUrl(
+      alias,
+      accessUrlDto,
+      clientInfo
+    );
   }
 }

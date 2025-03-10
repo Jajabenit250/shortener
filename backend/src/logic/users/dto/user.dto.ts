@@ -7,6 +7,7 @@ export class CreateUserDto extends OmitType(User, [
   'id',
   'createdAt',
   'updatedAt',
+  'isEmailVerified',
 ] as const) {}
 
 /**
