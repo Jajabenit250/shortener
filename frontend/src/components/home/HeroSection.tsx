@@ -1,6 +1,6 @@
-'use client'
+"use client";
 
-import ShortenerForm from '@/components/shortener/ShortenerForm'
+import ShortenerForm from "@/components/shortener/ShortenerForm";
 
 export default function HeroSection() {
   return (
@@ -23,18 +23,21 @@ export default function HeroSection() {
           </svg>
         </div>
       </div>
-      
+
       <div className="container mx-auto px-4 text-center relative z-10">
         <h1 className="text-4xl md:text-5xl font-bold mb-6">
           Build stronger digital connections
         </h1>
         <p className="text-xl max-w-4xl mx-auto mb-8">
-          Use our URL shortener, QR Codes, and landing pages to engage your audience and connect them to the right information. Build, edit, and track everything inside our URL Shortener platform.
+          Use our URL shortener, QR Codes, and landing pages to engage your
+          audience and connect them to the right information. Build, edit, and
+          track everything inside our URL Shortener platform.
         </p>
-        
-        {/* URL Shortener Form */}
-        <ShortenerForm />
+
+        <div className='className="bg-[#001833] text-gray-700 py-16 relative overflow-hidden"'>
+          <ShortenerForm />
+        </div>
       </div>
     </section>
-  )
+  );
 }

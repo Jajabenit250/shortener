@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -35,24 +36,22 @@ interface AnalyticsData {
   timeline: { date: string; clicks: number }[]
 }
 
-export default function AnalyticsPage({ params }: { params: { alias: string } }) {
+export default function AnalyticsPage({ params }: { params: any }) {
   const router = useRouter()
-  const { alias } = params
+  const { alias } = React.use(params as any) as { alias: string }
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [dateRange, setDateRange] = useState('7d')
 
   useEffect(() => {
-    // Check if user is authenticated
-    if (typeof window !== 'undefined') {
-      if (!isAuthenticated()) {
-        router.push('/auth/login?redirect=analytics')
-        return
-      }
+    // Check if user is authenticated - no need to check for window in useEffect
+    if (!isAuthenticated()) {
+      router.push('/auth/login?redirect=analytics')
+      return
     }
 
     fetchAnalytics()
-  }, [alias, dateRange])
+  }, [alias, dateRange, router])
 
   const fetchAnalytics = async () => {
     setIsLoading(true)

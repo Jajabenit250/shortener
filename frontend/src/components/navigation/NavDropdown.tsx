@@ -21,7 +21,6 @@ export default function NavDropdown({
 }: NavDropdownProps) {
   return (
     <div
-      className="relative group"
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
@@ -43,7 +42,7 @@ export default function NavDropdown({
       </button>
 
       {active && (
-        <div className="absolute left-0 top-full mt-1 bg-white shadow-lg rounded-md p-4 md:p-6 w-[95vw] max-w-[1200px] z-10 max-h-[85vh] overflow-y-auto">
+        <div className="absolute left-0 top-full mt-0 bg-white shadow-lg p-4 md:p-6 w-[100vw] h-[30vw] z-10 max-h-[95vh] overflow-y-auto">
           {children}
         </div>
       )}

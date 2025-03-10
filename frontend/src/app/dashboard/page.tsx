@@ -7,7 +7,6 @@ import { getUserUrls, isAuthenticated } from '@/lib/api'
 import { toast } from "@/components/ui/use-toast"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { 
   Card,
   CardContent, 
@@ -19,7 +18,6 @@ import {
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -40,7 +38,7 @@ import {
   PaginationPrevious
 } from "@/components/ui/pagination"
 import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Loader2, MoreHorizontal, LinkIcon, BarChart2Icon, Copy, ExternalLink } from "lucide-react"
 import Header from '@/components/common/Header'
 import ShortenerForm from '@/components/shortener/ShortenerForm'
@@ -70,12 +68,12 @@ export default function DashboardPage() {
 
   useEffect(() => {
     // Check if user is authenticated
-    if (typeof window !== 'undefined') {
-      if (!isAuthenticated()) {
-        router.push('/auth/login?redirect=dashboard')
-        return
-      }
-    }
+    // if (typeof window !== 'undefined') {
+    //   if (!isAuthenticated()) {
+    //     router.push('/auth/login?redirect=dashboard')
+    //     return
+    //   }
+    // }
 
     // Load user's URLs
     fetchUrls()
@@ -98,7 +96,6 @@ export default function DashboardPage() {
       setUrls(data.urls)
       setTotalUrls(data.total)
     } catch (error) {
-      console.error('Error fetching URLs:', error)
       toast({
         title: "Error",
         description: "Failed to load your URLs. Please try again.",

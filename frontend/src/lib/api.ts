@@ -3,7 +3,7 @@ import { toast } from "@/components/ui/use-toast";
 import { CreateUrlDto, UrlFiltersDto, AccessUrlDto } from "../utils/interface";
 
 // Base configuration
-const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
+const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:6060";
 const sessionKey = "URL_SHORTENER:TOKEN";
 const sessionRefreshKey = "URL_SHORTENER:REFRESH_TOKEN";
 const sessionUser = "URL_SHORTENER:USER";
@@ -115,8 +115,7 @@ export const handleLogout = () => {
     localStorage.removeItem(sessionUser);
     localStorage.removeItem(sessionUserRole);
     
-    // Redirect to login page
-    window.location.href = "/login";
+    window.location.href = "/auth/login";
   }
 };
 
@@ -287,16 +286,31 @@ export const getUrlAnalytics = async (
   }
 };
 
-export const accessProtectedUrl = async (
-  alias: string,
-  data: AccessUrlDto
-): Promise<any> => {
+/**
+ * Check if a URL is password-protected or get redirection info
+ * This is used by the redirect page for the initial check
+ */
+export const checkRedirect = async (alias: string): Promise<any> => {
   try {
-    const response = await axiosInstance.post(`/${alias}/access`, data);
-    return response.data;
+    const response = await await axiosInstance.get(`${alias}`);
+
+    const data = response?.data;
+
+    return data
   } catch (error) {
     throw formatApiErrorResponse(error);
   }
+};
+
+export const submitPasswordDirectProtectedUrl = async (
+  alias: string,
+  password: string
+): Promise<any> => {
+  const response = await axiosInstance.post(`${alias}/access`, JSON.stringify({ password }));
+  
+  const data = response.data;
+  
+  return data;
 };
 
 // Helper function to check if user is authenticated

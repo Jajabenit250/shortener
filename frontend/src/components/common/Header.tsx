@@ -275,11 +275,6 @@ export default function Header() {
                 </div>
               </div>
             </NavDropdown>
-
-            {/* Pricing Link */}
-            <Link href="/pricing" className="text-[#0b1736] hover:text-[#ff5c00] py-5">
-              Pricing
-            </Link>
           </nav>
 
           {/* Right side Navigation */}
@@ -315,7 +310,7 @@ export default function Header() {
                 </Link>
 
                 <Link
-                  href="/auth/signup"
+                  href="/auth/register"
                   className="bg-[#0066ff] text-white hover:bg-[#0052cc] px-4 py-2 rounded-md font-medium whitespace-nowrap"
                 >
                   Sign up Free
