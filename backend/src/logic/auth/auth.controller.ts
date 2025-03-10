@@ -14,6 +14,7 @@ import { _400, _401 } from 'src/common/constants/error.constant';
 import { User } from 'src/database/entities/user.entity';
 import { CreateUserDto } from '../users/dto/user.dto';
 import { Public } from 'src/common/decorators/public.decorator';
+import { AuthenticatedUser } from 'src/common/decorators/user.decorator';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -57,6 +58,25 @@ export class AuthController {
       return result;
     } catch (error) {
       this.logger.error(`Sign in failed: ${error.message}`, error.stack);
+      throw error;
+    }
+  }
+
+  /**
+   * Logs out a user by invalidating their refresh token
+   * @returns Success message
+   */
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Sign out current user' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Successfully signed out' })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
+  async logout(@AuthenticatedUser() user: User): Promise<{ message: string }> {
+    try {
+      await this.authService.logout(user.id);
+      return { message: 'Successfully logged out' };
+    } catch (error) {
+      this.logger.error(`Logout failed: ${error.message}`, error.stack);
       throw error;
     }
   }

@@ -133,6 +133,32 @@ export class AuthService {
   }
 
   /**
+   * Log out a user by invalidating their refresh token
+   * @param userId The ID of the user to log out
+   */
+  async logout(userId: string): Promise<void> {
+    try {
+      // Find the user
+      const user = await this.usersService.findUserById(userId);
+      if (!user) {
+        throw new UnauthorizedException(_401.UNAUTHORIZED);
+      }
+
+      // Remove refresh token
+      await this.usersService.updateRefreshToken(userId, null);
+      
+      this.logger.log(`User ${userId} successfully logged out`);
+    } catch (error) {
+      this.logger.error(
+        `Logout failed for user ${userId}: ${error.message}`,
+        error.stack,
+        AuthService.name,
+      );
+      throw error;
+    }
+  }
+
+  /**
    * Authenticate with Google
    */
   async googleAuth(data: GoogleAuthDto): Promise<any> {
