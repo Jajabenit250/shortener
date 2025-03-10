@@ -2,40 +2,6 @@
 
 A full-stack URL shortener application with analytics, user authentication, and a modern UI. Create, manage, and track short links with comprehensive statistics.
 
-## Table of Contents
-- [shortener - URL Shortener](#shortener---url-shortener)
-  - [Table of Contents](#table-of-contents)
-  - [Overview](#overview)
-  - [Features](#features)
-    - [Authentication \& User Management](#authentication--user-management)
-    - [URL Management](#url-management)
-    - [Analytics \& Tracking](#analytics--tracking)
-    - [User Experience](#user-experience)
-  - [Tech Stack](#tech-stack)
-    - [Frontend](#frontend)
-    - [Backend](#backend)
-    - [DevOps](#devops)
-  - [Getting Started](#getting-started)
-    - [Prerequisites](#prerequisites)
-    - [Installation](#installation)
-      - [Clone the repository](#clone-the-repository)
-      - [Backend Setup](#backend-setup)
-      - [Frontend Setup](#frontend-setup)
-      - [Using Docker (recommended)](#using-docker-recommended)
-  - [API Documentation](#api-documentation)
-    - [Authentication Endpoints](#authentication-endpoints)
-    - [URL Endpoints](#url-endpoints)
-    - [Response Codes](#response-codes)
-  - [Authentication](#authentication)
-    - [Social Authentication](#social-authentication)
-  - [Deployment](#deployment)
-    - [Docker Deployment](#docker-deployment)
-    - [Manual Deployment](#manual-deployment)
-      - [Backend](#backend-1)
-      - [Frontend](#frontend-1)
-    - [Cloud Deployment](#cloud-deployment)
-  - [License](#license)
-
 ## Overview
 
 ShortLinks is a Bitly-like URL shortener that allows users to create shortened links, track their performance, and visualize analytics. Built with security, performance, and user experience in mind, it features JWT authentication, comprehensive analytics, and a responsive UI.
@@ -71,6 +37,19 @@ The project was built as part of a software engineering challenge to demonstrate
 - Real-time notifications
 - Comprehensive error handling
 - Dark mode support
+  
+# Projects Image
+
+## landing Page
+![image](https://github.com/user-attachments/assets/a82a002f-faea-47c8-9790-0efd5640216c)
+
+## Dashboard
+
+![image](https://github.com/user-attachments/assets/69329652-8707-49d2-93f3-023784237778)
+
+## Authentication page
+
+![image](https://github.com/user-attachments/assets/0ca1afdc-d7eb-4622-80c8-f7e8fec60a85)
 
 ## Tech Stack
 
@@ -92,7 +71,6 @@ The project was built as part of a software engineering challenge to demonstrate
 ### DevOps
 - Docker and docker-compose
 - GitHub Actions for CI/CD
-- Nginx for production hosting
 
 ## Getting Started
 
@@ -103,7 +81,6 @@ You'll need the following installed:
 - npm or yarn
 - Docker and docker-compose (for containerized setup)
 - PostgreSQL (if running locally)
-- Redis (if running locally)
 
 ### Installation
 
@@ -234,15 +211,6 @@ npm run build
 npm start
 ```
 
-### Cloud Deployment
-
-The application can be deployed to AWS, Google Cloud, or any other cloud provider. Here's a basic approach for AWS:
-1. Set up an EC2 instance with Docker installed
-2. Configure security groups (open ports 80, 443)
-3. Clone the repository to the instance
-4. Set up environment variables
-5. Run docker-compose as described above
-6. Set up an Elastic IP and configure DNS
 
 ## License
 
